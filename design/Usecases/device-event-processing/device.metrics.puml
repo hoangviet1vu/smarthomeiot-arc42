@@ -1,0 +1,14 @@
+@startuml "metrics-stored"
+
+title "Metric Stored"
+
+queue "Metric Stream" as mstream 
+participant "Kafka InfluxDB Connector" as collector 
+database "Device Metrics\nTimeseries Database" as timeseries 
+
+mstream --> collector: metrics
+activate collector
+  collector -> timeseries: store
+deactivate collector
+
+@enduml

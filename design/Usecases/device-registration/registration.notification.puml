@@ -1,0 +1,39 @@
+@startuml "Device-Registration"
+ 
+title "Device Registration: Notification"
+
+box "Device Containers"
+  queue "Device CDC Event Stream" as stream 
+  participant "Device Notification\nConnector" as connector 
+  entity "Notification" as noti
+end box 
+
+box "Building Containers"  
+  participant "Building Service" as bservice 
+end box 
+
+box "User Containers"  
+  participant "User Service" as uservice 
+end box 
+
+box "Notification Containers"  
+  queue "Notification Stream" as nstream 
+end box 
+
+stream --> connector: Device Updated Event\n{ deviceId, state = ACTIVATED }
+activate connector
+  connector -> bservice: Get /rooms/{device.location.id}
+  activate bservice
+    connector <- bservice: { room }
+  deactivate bservice
+  connector -> uservice: Get /usergroups/{room.usergroup_id}/users
+  activate uservice
+    connector <- uservice: { users }
+  deactivate uservice
+  connector ->  noti **: New Device Activated Notification
+  connector <--  noti: Notification
+  connector -> nstream: Notification  
+deactivate connector
+
+@enduml 
+

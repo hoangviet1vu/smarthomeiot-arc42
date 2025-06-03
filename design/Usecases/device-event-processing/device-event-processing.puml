@@ -1,0 +1,26 @@
+@startuml "device-event-processing"
+
+title "Device Event Processing"
+participant "Tuya Cloud" as tuya#73c6b6
+
+box "SmartHome Iot: Device Container"
+  participant "Tuya Adapter" as adapter  
+  queue "Device Event Stream" as estream 
+  participant "Device Event ETL" as etl 
+  queue "Metric Stream" as mstream  
+end box 
+
+tuya --> adapter: publish device events
+activate adapter
+  adapter -> adapter: format events 
+  adapter -> estream: send estream
+deactivate adapter
+activate estream
+  estream --> etl
+deactivate estream
+activate etl
+  etl -> etl: transform and classfify events to metrics
+  etl --> mstream: device metrics
+deactivate etl
+
+@enduml

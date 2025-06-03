@@ -1,0 +1,42 @@
+@startuml "Building Construction: New Area Notification"
+
+title "Building Construction: New Area Notification"
+
+box "Building Containers"
+  queue "Building CDC Event Stream" as bstream 
+  participant "Building Notification\nConnector" as connector 
+end box 
+box "Notification Containers"
+  queue "Notification Stream" as nstream 
+  participant "Notification Service" as nservice 
+  participant "User Service" as uservice 
+  entity "Notification" as notification 
+  database "Notification Collector" as db
+  queue "Notification CDC Stream" as cdcstream 
+end box 
+
+bstream --> connector: Area Created Event
+activate connector
+  connector -> connector: convert to Notification format
+  connector -> nstream: forard to Notification Stream
+deactivate connector
+activate nstream
+  nstream --> nservice: Notification
+deactivate nstream
+activate nservice
+  nservice -> uservice: GET /groups/group_id/users
+  activate uservice
+    nservice <-- uservice: user_list (email, phone, fcm_token)
+  deactivate uservice
+
+  loop "user : user_list"
+    nservice -> notification **: create notification for each user
+  end    
+  nservice -> db: store notifications
+deactivate nservice
+activate db
+  db -> cdcstream: notification
+deactivate db  
+
+@enduml 
+

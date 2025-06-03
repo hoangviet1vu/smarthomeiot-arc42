@@ -1,0 +1,21 @@
+@startuml "Device States"
+ 
+title "Equipment Lifecycle"
+
+[*] --> SHADOW: Create
+SHADOW -right-> PENDING: submit to \nTuya Cloud
+PENDING -right-> ACTIVATED#LightBlue: Tuya Cloud\naccepts the equipment
+PENDING -down-> REJECTED#Pink : Tuya Cloud\nreject the equipment
+ACTIVATED -down-> DEACTIVATED: deactivate
+DEACTIVATED#Pink --> [*]: remove
+REJECTED --> [*]: remove
+
+SHADOW : send to Tuya Cloud
+PENDING : be accepted by Tuya Cloud
+PENDING : be rejected by Tuya Cloud
+ACTIVATED: deactivate
+REJECTED: remove
+DEACTIVATED: remove
+
+@enduml 
+

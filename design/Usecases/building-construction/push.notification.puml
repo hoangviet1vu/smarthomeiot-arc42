@@ -1,0 +1,19 @@
+@startuml "Building Construction: Push Notification"
+
+title "Building Construction: Push Notification"
+
+queue "Notification CDC Stream" as cdcstream 
+participant "Push Notification Service" as npservice 
+participant "Google Firebase" as firebase
+actor "User" as admin
+
+cdcstream --> npservice: Notification
+activate npservice
+  npservice -> firebase: Push Notification
+deactivate npservice
+activate firebase
+  firebase --> admin: Push Notification
+deactivate firebase
+
+@enduml 
+

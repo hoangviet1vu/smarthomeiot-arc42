@@ -1,0 +1,19 @@
+@startuml "Alert"
+
+title "Metric Analysis"
+
+queue "Metric Stream" as mstream 
+participant "Metrics Analyzer" as analyzer 
+entity "Alert" as alert#Red 
+queue "Notification Stream" as nstream 
+
+mstream --> analyzer: metrics
+activate analyzer
+  analyzer -> analyzer: analyze metric flow in realtime
+  alt #Pink "system detects environmental hazards"
+    analyzer -> alert **: create Alert
+  end 
+  analyzer -> nstream
+deactivate analyzer
+
+@enduml

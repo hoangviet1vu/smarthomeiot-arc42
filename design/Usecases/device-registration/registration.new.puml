@@ -1,0 +1,30 @@
+@startuml "Device-Registration"
+ 
+title "Device Registration: Add new device"
+
+actor "Engineer" as engineer
+participant "Device Service" as dservice
+entity "New Device" as equip
+database "Device Collection" as dvdb
+queue "Device CDC Event Stream" as stream 
+participant "Building Service" as bservice
+
+engineer -> bservice: search?name=location
+activate bservice
+  engineer <-- bservice: building, areas, floors, rooms
+deactivate bservice
+engineer -> engineer: select installation location
+engineer -> dservice: POST /devices { device info, location}
+activate dservice
+  dservice -> equip **: Create device 
+  note right of equip
+    Device { deviceId, state = SHADOW }
+  end note 
+  dservice -> dvdb: store equip
+  activate dvdb
+    dvdb --> stream: Device  { deviceId, state = SHADOW }
+  deactivate dvdb
+  engineer <-- dservice: Device  { deviceId, state = SHADOW, location }
+deactivate dservice
+@enduml 
+

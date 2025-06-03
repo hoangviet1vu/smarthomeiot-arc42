@@ -1,0 +1,35 @@
+@startuml
+
+actor "User" as user
+box "SmartHome Iot"
+  participant "Kong Gateway" as kong
+  participant "User Service" as authz
+  participant "SmartHome Iot Services" as services 
+end box
+
+participant "AWS Cognito" as cognito 
+
+user -> kong : send requests to SmartHome Iot Services {uri, request, jwt}
+activate kong 
+  kong -> cognito : [OIDC] validate JWT
+  alt #pink "JWT not valid"
+    kong --> user : 401 Unauthorized
+  end  
+  kong --> authz : POST /authz {uri, jwt, request}
+  activate authz
+    authz -> authz : verify request with policies 
+    kong <-- authz : response {denied/allowed}
+  deactivate authz
+  alt #pink "request not authorized"
+    kong --> user : 403 Unauthorized 
+  end  
+  kong -> services : forward request 
+  activate services
+    services -> services : process request
+    services --> kong : response
+  deactivate services
+  user <-- kong: response
+
+deactivate kong
+
+@enduml

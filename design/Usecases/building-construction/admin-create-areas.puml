@@ -1,0 +1,45 @@
+@startuml "Building Construction: Add an area and assign to user group"
+
+title "Building Construction: Creating a New Area in a Building"
+
+actor "Administrator" as admin
+participant "Building Service" as bservice 
+entity "New Area" as area
+participant "User Service" as uservice 
+database "Building Collector" as db
+queue "Building CDC Event Stream" as stream 
+participant "ES Connector" as connector 
+database "Building Search Storage" as es 
+
+admin -> bservice: Get /building/search?query=building-name
+activate bservice
+  bservice -> es: search buildings
+  admin <-- bservice: building list
+deactivate bservice
+admin -> admin: pickup building
+admin -> uservice: Get /groups?query=groups-name
+activate uservice
+  admin <-- uservice: user_groups
+deactivate uservice
+
+admin -> admin: pickup user group
+admin -> bservice: POST /building/{building_ids}/areas { areas information, user_group_id }
+
+activate bservice
+  bservice -> uservice: verify user_group_id
+  bservice -> area **: create area (building_id, user_group_id)
+  bservice <-- area: new_area
+  bservice -> db: store new_area to database
+  activate db
+  db --> stream: Area Created Event
+  deactivate db
+  admin <-- bservice: new area infomation
+deactivate bservice
+
+stream --> connector: Area Created Event
+activate connector
+  connector -> es: Store Area for searching purpose
+deactivate connector
+
+@enduml 
+

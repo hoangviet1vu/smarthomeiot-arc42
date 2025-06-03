@@ -1,0 +1,39 @@
+@startuml "Device-Registration"
+ 
+title "Device Registration: Send to Tuya"
+
+box "SmartHome Iot: Device Container"
+  queue "Device CDC Event Stream" as stream 
+  participant "Tuya Adapter" as adapter
+  entity "Device Confirmation\nEvent" as event
+  queue "Device Event Stream" as estream 
+  participant "Device Service" as dservice  
+  database "Device Collection" as dvdb
+  entity "New Device" as equip
+  queue "Device CDC Event Stream" as stream2 
+end box 
+participant "Tuya Cloud" as tuya#73c6b6
+
+stream --> adapter: Device Created Event\n{ deviceId, state = SHADOW }
+activate adapter
+  adapter -> tuya: Create Device { DeviceId }
+  activate tuya
+    adapter <-- tuya: accepted    
+  deactivate tuya
+  adapter -> event **: create Confirmation Event
+  adapter -> estream: Confirmation Event
+deactivate adapter
+activate estream
+  estream --> dservice: Confirmation Event
+deactivate estream
+activate dservice
+  dservice -> dvdb: update { deviceId, state = ACTIVATED }
+  activate dvdb
+    dvdb -> equip **: find(deviceId)
+    dvdb -> equip: update
+    dvdb --> stream2: Device Updated Event\n{ deviceId, state = ACTIVATED }
+  deactivate dvdb  
+deactivate dservice
+
+@enduml 
+

@@ -1,0 +1,19 @@
+@startuml "Building Construction: Email"
+
+title "Building Construction: Email"
+
+queue "Notification CDC Stream" as cdcstream 
+participant "Email Delivery Service" as eservice
+participant "AWS SES" as emailsender
+actor "User" as admin
+
+cdcstream --> eservice: Notification
+activate eservice
+  eservice -> eservice: Format Email
+  eservice -> emailsender: Email
+deactivate eservice
+activate emailsender
+  emailsender --> admin: Email
+deactivate emailsender
+
+@enduml 

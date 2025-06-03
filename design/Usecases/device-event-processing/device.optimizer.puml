@@ -1,0 +1,34 @@
+@startuml "Optimizer"
+
+title "Equipment Behavior Optimizer Servic"
+
+box "SmartHome Iot: Device Container"
+  queue "Metric Stream" as mstream 
+  participant "Equipment Behavior\nOptimizer Service" as analyzer #aed6f1
+  entity "Device Commands" as command#73c6b6
+  queue "Command Stream" as cstream 
+  participant "Tuya Adapter" as adapter   
+end box 
+
+participant "Tuya Cloud" as tuya#73c6b6
+entity "Iot Equipments" as device#73c6b6
+
+mstream --> analyzer: metrics
+activate analyzer
+  analyzer -> analyzer: analyze metric flow in realtime
+  alt #aed6f1 "Make decision of adjustment"
+    analyzer -> command **: Create Device Command
+  end 
+  analyzer -> cstream
+deactivate analyzer
+activate cstream
+cstream --> adapter: Commands
+deactivate cstream
+activate adapter
+  adapter -> tuya: device commands
+deactivate adapter
+activate tuya
+  tuya -> device: adjust device behavior
+deactivate tuya
+
+@enduml
