@@ -3,7 +3,7 @@
 
 ### 5.1 Level 1: Whitebox System (System Context)
 
-![SmartHomeIoT](./Img/C4-Context.Details.drawio.png)
+![SmartHomeIoT](../Img/C4-Context.Details.drawio.png)
 
 The system is designed to serve a diverse set of users through a centralized user identity solution, providing unified access across services. It integrates with Tuya Cloud for IoT device management and focuses on extending functionality to manage device locations within buildings and user-specific access controls.
 
@@ -31,16 +31,16 @@ The following **C4 Container Diagrams** provide a detailed view of the component
 
 #### 5.2.1 Building Service
 
-Link to [Building Service](./Block-Views/Building-Service.md)
+Link to [Building Service](./Building-Service.md)
 
 #### 5.2.2 Device Service
 
-Link to [Device Service](./Block-Views/Device-Service.md)
+Link to [Device Service](./Device-Service.md)
 
 #### 5.2.3 User Service 
 
-Link to [User Service](./Block-Views/User-Service.md)
+Link to [User Service](./User-Service.md)
 
 #### 5.2.4 Notification Service 
 
-Link to [Notification Service](./Block-Views/Notification-Service.md)
+Link to [Notification Service](./Notification-Service.md)
